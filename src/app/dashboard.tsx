@@ -8,7 +8,7 @@ import {
 
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { fetchDeadlinesFromAPI } from "./program";
+import { fetchExternalDeadlines } from "./program";
 import { TaskItem } from "./task";
 
 export default function Dashboard() {
@@ -17,31 +17,26 @@ export default function Dashboard() {
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetchDeadlinesFromAPI()
+    fetchExternalDeadlines()
       .then((data: any) => {
         setTasks(data);
         setLoading(false);
       })
       .catch((error) => {
-        console.error(error);
+        console.error("Error:", error);
         setLoading(false);
       });
   }, []);
 
   function finishTask(id: number) {
-    setTasks(
-      tasks.filter((task) => task.id !== id)
-    );
+    setTasks(tasks.filter((task) => task.id !== id));
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.header}>
         <View style={styles.headerTop}>
-          <Text style={styles.appName}>
-            MyDeadline
-          </Text>
-
+          <Text style={styles.appName}>MyDeadline</Text>
           <TouchableOpacity
             style={styles.logoutButton}
             onPress={() => router.replace("/")}
@@ -49,66 +44,42 @@ export default function Dashboard() {
             <Text style={styles.logoutText}>Logout</Text>
           </TouchableOpacity>
         </View>
-
-        <Text style={styles.greeting}>
-          Halo, {name || "User"} 👋
-        </Text>
+        <Text style={styles.greeting}>Halo, {name || "User"} 👋</Text>
       </View>
 
-      <ScrollView
-        contentContainerStyle={styles.content}
-      >
-        <Text style={styles.heading}>
-          Tugas Saya
-        </Text>
+      <ScrollView contentContainerStyle={styles.content}>
+        <Text style={styles.heading}>Tugas dari External API</Text>
         <Text style={styles.description}>
-          Jangan sampai ada deadline yang terlewat!
+          Mengambil data langsung menggunakan fetch API!
         </Text>
 
-        {loading ? (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Memuat data dari API...</Text>
-          </View>
-        ) : (
-          tasks.map((task) => (
-            <View
-              key={task.id}
-              style={styles.taskCard}
-            >
-              <Text style={styles.subject}>
-                {task.subject}
-              </Text>
-              <Text style={styles.taskTitle}>
-                {task.title}
-              </Text>
-              <View style={styles.taskBottom}>
-                <Text style={styles.deadline}>
-                  📅 {task.deadline}
-                </Text>
-                <TouchableOpacity
-                  style={styles.finishButton}
-                  onPress={() => finishTask(task.id)}
-                >
-                  <Text style={styles.finishText}>
-                    Selesai
-                  </Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          ))
+        {loading && (
+          <Text style={{ textAlign: "center", color: "#64748B", marginTop: 20 }}>
+            Memuat data dari API...
+          </Text>
         )}
 
-        {!loading && tasks.length === 0 && (
+        {tasks.map((task) => (
+          <View key={task.id} style={styles.taskCard}>
+            <Text style={styles.subject}>{task.subject}</Text>
+            <Text style={styles.taskTitle}>{task.title}</Text>
+            <View style={styles.taskBottom}>
+              <Text style={styles.deadline}>📅 {task.deadline}</Text>
+              <TouchableOpacity
+                style={styles.finishButton}
+                onPress={() => finishTask(task.id)}
+              >
+                <Text style={styles.finishText}>Selesai</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        ))}
+
+        {tasks.length === 0 && !loading && (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyIcon}>
-              🎉
-            </Text>
-            <Text style={styles.emptyTitle}>
-              Semua tugas selesai!
-            </Text>
-            <Text style={styles.emptyText}>
-              Tidak ada deadline yang perlu dikerjakan.
-            </Text>
+            <Text style={styles.emptyIcon}>🎉</Text>
+            <Text style={styles.emptyTitle}>Semua tugas selesai!</Text>
+            <Text style={styles.emptyText}>Tidak ada deadline dari API.</Text>
           </View>
         )}
 
@@ -116,11 +87,8 @@ export default function Dashboard() {
           style={styles.addButton}
           onPress={() => router.push("./add-task")}
         >
-          <Text style={styles.addButtonText}>
-            + Tambah Tugas
-          </Text>
+          <Text style={styles.addButtonText}>+ Tambah Tugas</Text>
         </TouchableOpacity>
-
       </ScrollView>
     </View>
   );
