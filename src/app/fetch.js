@@ -1,8 +1,8 @@
 import deadlineData from './response.json';
 
 export const fetchAllDeadlines = async () => {
-    try{
-        await new Promise((resolve) => setTimeout(resolve,500));
+    try {
+        await new Promise((resolve) => setTimeout(resolve, 500));
 
         return deadlineData;
     } catch (error) {

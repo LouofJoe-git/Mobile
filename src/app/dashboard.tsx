@@ -8,22 +8,24 @@ import {
 
 import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { getAlldeadlines } from "./program";
-
-type Task = {
-  id: number;
-  subject: string;
-  title: string;
-  deadline: string;
-};
+import { fetchDeadlinesFromAPI } from "./program";
+import { TaskItem } from "./task";
 
 export default function Dashboard() {
   const { name } = useLocalSearchParams();
-  const [tasks, setTasks] = useState<Task[]>([]);
+  const [tasks, setTasks] = useState<TaskItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    const data = getAlldeadlines();
-    setTasks(data);
+    fetchDeadlinesFromAPI()
+      .then((data: any) => {
+        setTasks(data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error(error);
+        setLoading(false);
+      });
   }, []);
 
   function finishTask(id: number) {
@@ -34,13 +36,12 @@ export default function Dashboard() {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
       <View style={styles.header}>
         <View style={styles.headerTop}>
           <Text style={styles.appName}>
             MyDeadline
           </Text>
-          
+
           <TouchableOpacity
             style={styles.logoutButton}
             onPress={() => router.replace("/")}
@@ -49,7 +50,6 @@ export default function Dashboard() {
           </TouchableOpacity>
         </View>
 
-        {/* Menampilkan nama yang diinput saat login */}
         <Text style={styles.greeting}>
           Halo, {name || "User"} 👋
         </Text>
@@ -65,36 +65,40 @@ export default function Dashboard() {
           Jangan sampai ada deadline yang terlewat!
         </Text>
 
-        {/* Daftar tugas */}
-        {tasks.map((task) => (
-          <View
-            key={task.id}
-            style={styles.taskCard}
-          >
-            <Text style={styles.subject}>
-              {task.subject}
-            </Text>
-            <Text style={styles.taskTitle}>
-              {task.title}
-            </Text>
-            <View style={styles.taskBottom}>
-              <Text style={styles.deadline}>
-                📅 {task.deadline}
-              </Text>
-              <TouchableOpacity
-                style={styles.finishButton}
-                onPress={() => finishTask(task.id)}
-              >
-                <Text style={styles.finishText}>
-                  Selesai
-                </Text>
-              </TouchableOpacity>
-            </View>
+        {loading ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Memuat data dari API...</Text>
           </View>
-        ))}
+        ) : (
+          tasks.map((task) => (
+            <View
+              key={task.id}
+              style={styles.taskCard}
+            >
+              <Text style={styles.subject}>
+                {task.subject}
+              </Text>
+              <Text style={styles.taskTitle}>
+                {task.title}
+              </Text>
+              <View style={styles.taskBottom}>
+                <Text style={styles.deadline}>
+                  📅 {task.deadline}
+                </Text>
+                <TouchableOpacity
+                  style={styles.finishButton}
+                  onPress={() => finishTask(task.id)}
+                >
+                  <Text style={styles.finishText}>
+                    Selesai
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          ))
+        )}
 
-        {/* Kalau tugas habis */}
-        {tasks.length === 0 && (
+        {!loading && tasks.length === 0 && (
           <View style={styles.emptyContainer}>
             <Text style={styles.emptyIcon}>
               🎉
@@ -108,7 +112,6 @@ export default function Dashboard() {
           </View>
         )}
 
-        {/* Tambah tugas */}
         <TouchableOpacity
           style={styles.addButton}
           onPress={() => router.push("./add-task")}
@@ -117,6 +120,7 @@ export default function Dashboard() {
             + Tambah Tugas
           </Text>
         </TouchableOpacity>
+
       </ScrollView>
     </View>
   );
