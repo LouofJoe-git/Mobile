@@ -1,14 +1,39 @@
 import {
-  View,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
+  View,
 } from "react-native";
 
 import { router } from "expo-router";
+import { useState } from "react";
 
-export default function AddTask() {
+  export default function AddTask() {
+
+  const [subject, setSubject] = useState("");
+  const [title, setTitle] = useState("");
+  const [deadline, setDeadline] = useState("");
+
+  // 2. Fungsi simpan tugas
+  const handleSave = () => {
+    // Validasi: pastikan ketiga kolom tidak kosong
+    if (!subject.trim() || !title.trim() || !deadline.trim()) {
+      alert("Mohon lengkapi semua kolom tugas!");
+      return;
+    }
+
+    // Kirim data tugas baru kembali ke dashboard
+    router.navigate({
+      pathname: "/dashboard",
+      params: {
+        newSubject: subject.trim(),
+        newTitle: title.trim(),
+        newDeadline: deadline.trim(),
+      },
+    });
+  };
+
   return (
     <View style={styles.container}>
 
@@ -20,37 +45,47 @@ export default function AddTask() {
         Mata Kuliah
       </Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Contoh: Pemrograman Mobile"
-      />
+<TextInput
+  style={styles.input}
+  placeholder="Contoh: Pemrograman Mobile"
+  value={subject}
+  onChangeText={setSubject}
+/>
+
 
       <Text style={styles.label}>
         Nama Tugas
       </Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Contoh: Membuat UI"
-      />
+<TextInput
+  style={styles.input}
+  placeholder="Contoh: Membuat UI"
+  value={title}
+  onChangeText={setTitle}
+/>
+
 
       <Text style={styles.label}>
         Deadline
       </Text>
 
-      <TextInput
-        style={styles.input}
-        placeholder="Contoh: 20 Oktober 2026"
-      />
+<TextInput
+  style={styles.input}
+  placeholder="Contoh: 20 Oktober 2026"
+  value={deadline}
+  onChangeText={setDeadline}
+/>
 
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.back()}
-      >
-        <Text style={styles.buttonText}>
-          Simpan Tugas
-        </Text>
-      </TouchableOpacity>
+
+<TouchableOpacity
+  style={styles.button}
+  onPress={handleSave}
+>
+  <Text style={styles.buttonText}>
+    Simpan Tugas
+  </Text>
+</TouchableOpacity>
+
 
       <TouchableOpacity
         style={styles.cancelButton}

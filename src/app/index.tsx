@@ -1,58 +1,52 @@
 import {
-  View,
+  StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
-  StyleSheet,
+  View,
 } from "react-native";
 
 import { router } from "expo-router";
+import { useState } from "react";
 
 export default function Login() {
+  const [name, setName] = useState("");
+
+  const handleLogin = () => {
+    if (!name.trim()) {
+      alert("Silakan masukkan nama terlebih dahulu!");
+      return;
+    }
+    router.replace({
+      pathname: "/dashboard",
+      params: { name: name.trim() },
+    });
+  };
+
   return (
     <View style={styles.container}>
-
       <View style={styles.logoContainer}>
-        <Text style={styles.logo}>
-          MyDeadline
-        </Text>
-
-        <Text style={styles.subtitle}>
-          Kelola tugas dan deadline bersama
-        </Text>
+        <Text style={styles.logo}>MyDeadline</Text>
+        <Text style={styles.subtitle}>Kelola tugas dan deadline bersama</Text>
       </View>
 
       <View style={styles.card}>
+        <Text style={styles.title}>Selamat Datang 👋</Text>
+        <Text style={styles.description}>Masukkan nama kamu untuk melanjutkan</Text>
 
-        <Text style={styles.title}>
-          Selamat Datang 👋
-        </Text>
-
-        <Text style={styles.description}>
-          Masukkan nama kamu untuk melanjutkan
-        </Text>
-
-        <Text style={styles.label}>
-          Nama
-        </Text>
-
+        <Text style={styles.label}>Nama</Text>
         <TextInput
           style={styles.input}
           placeholder="Masukkan nama"
           placeholderTextColor="#94A3B8"
+          value={name}
+          onChangeText={setName}
         />
 
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => router.push("/dashboard")}
-        >
-          <Text style={styles.buttonText}>
-            Masuk
-          </Text>
+        <TouchableOpacity style={styles.button} onPress={handleLogin}>
+          <Text style={styles.buttonText}>Masuk</Text>
         </TouchableOpacity>
-
       </View>
-
     </View>
   );
 }
