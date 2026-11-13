@@ -1,0 +1,22 @@
+[
+    {
+      "id": 1,
+      "subject": "Pemrograman Mobile",
+      "title": "Membuat desain awal aplikasi",
+      "deadline": "10 Oktober 2026"
+    },
+
+    {
+      "id": 2,
+      "subject": "Pemrograman Web",
+      "title": "Menyelesaikan Tailwind CSS",
+      "deadline": "12 Oktober 2026"
+    },
+
+    {
+      "id": 3,
+      "subject": "Pemrograman Fungsional",
+      "title": "Membuat presentasi",
+      "deadline": "15 Oktober 2026"
+    }
+]
